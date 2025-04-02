@@ -98,7 +98,8 @@ def update_reboot_all_for_new_main_module(reboot_all_for_new_main_module, **kwar
         state.pipeline = pipeline_widget.initialize_state_pipeline(new_main_module_id)
         visible_manager.initialize_lookup_table(new_main_module_id)
         visible_manager.set_visible(new_main_module_id, True)
-        reboot_all_for_new_main_module = False
+        state.reboot_all_for_new_main_module = False
+        simple.ResetCamera()
         print("Finish")
 
 

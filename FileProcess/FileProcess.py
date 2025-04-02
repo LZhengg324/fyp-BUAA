@@ -1,4 +1,5 @@
 import os
+import shutil
 import zipfile
 
 import paraview.web.venv  # Available in PV 5.10
@@ -57,9 +58,9 @@ class FileProcess:
         self.state.write_interval = writeInterval
         self.state.cur_step_ptr = 0
         self.state.cur_step = self.state.write_interval[self.state.cur_step_ptr]
-        self.state.min_time_step = min(writeInterval)
-        self.state.max_time_step = max(writeInterval)
-        self.state.step = (max(writeInterval) - min(writeInterval)) // (len(writeInterval) - 1)
+        # self.state.min_time_step = min(writeInterval)
+        # self.state.max_time_step = max(writeInterval)
+        # self.state.step = (max(writeInterval) - min(writeInterval)) // (len(writeInterval) - 1)
 
         # Main Card
         self.state.data_bounds = file_readers[self.state.cur_step].GetDataInformation().GetBounds()
@@ -85,6 +86,8 @@ class FileProcess:
 
         # Create User Process Directory
         process_dir = WRITE_FILE_DIRECTORY.joinpath(f"process_{os.getpid()}")
+        if process_dir.exists():
+            shutil.rmtree(process_dir)
         process_dir.mkdir(exist_ok=True)
 
         # Check File Content Exists
