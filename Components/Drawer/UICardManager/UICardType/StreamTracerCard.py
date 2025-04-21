@@ -336,7 +336,17 @@ class StreamTracerCard:
                     classes="my-2",
                     # v_on={"@keypress.native.enter": "modify_stream_tracer_props"}
                 )
+            with vuetify.VRow():
+                vuetify.VBtn(
+                    "Threshold",
+                    classes="my-3",
+                    width="100%",
+                    click=self.ctrl.create_threshold_view,
+                )
 
+    # ----------------------------------------------------------------------------
+    # GUI Callbacks
+    # ----------------------------------------------------------------------------
 
     def reset_default_MSL(self):
         self.state.ST_MSL_value = self.state.ST_MSL

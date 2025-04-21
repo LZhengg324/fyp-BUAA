@@ -8,6 +8,7 @@ from Components.Drawer.UICardManager.DataHolder.Data.SliceData import SliceData
 from Components.Drawer.UICardManager.DataHolder.Data.ContourData import ContourData
 from Components.Drawer.UICardManager.DataHolder.Data.GlyphData import GlyphData
 from Components.Drawer.UICardManager.DataHolder.Data.StreamTracerData import StreamTracerData
+from Components.Drawer.UICardManager.DataHolder.Data.ThresholdData import ThresholdData
 from Constants.card_type import CardType
 
 class DataHolder:
@@ -35,6 +36,8 @@ class DataHolder:
             slice_data = self.get_data(parent_idx)
             if isinstance(slice_data, SliceData):
                 return StreamTracerData(data_id=data_id, name=name, server=self.server, slice_data=slice_data)
+        elif card_type == CardType.Threshold:
+            return ThresholdData(data_id=data_id, name=name, server=self.server)
         else:
             return Data(data_id=data_id, name=name, server=self.server)
 

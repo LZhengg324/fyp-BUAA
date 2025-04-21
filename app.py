@@ -10,6 +10,7 @@ from Components.Drawer.UICardManager.UICardType.GlyphCard import GlyphCard
 from Components.Drawer.UICardManager.UICardType.MainCard import MainCard
 from Components.Drawer.UICardManager.UICardType.SliceCard import SliceCard
 from Components.Drawer.UICardManager.UICardType.StreamTracerCard import StreamTracerCard
+from Components.Drawer.UICardManager.UICardType.ThresholdCard import ThresholdCard
 from Components.Toolbar.StandardButton import StandardButton
 from Constants.card_type import CardType
 from Components.Toolbar.TimeStep import TimeStep
@@ -123,8 +124,10 @@ contour_card = ContourCard(card_name="Contour", server=server, source_manager=so
                            visible_manager=visible_manager, data_holder=data_holder)
 glyph_card = GlyphCard(card_name="Glyph", server=server, source_manager=source_manager,
                        visible_manager=visible_manager, data_holder=data_holder)
-streamtrace_card = StreamTracerCard(card_name="Stream Tracer", server=server, source_manager=source_manager,
+streamtracer_card = StreamTracerCard(card_name="Stream Tracer", server=server, source_manager=source_manager,
                                     visible_manager=visible_manager, data_holder=data_holder)
+threshold_card = ThresholdCard(card_name="Threshold", server=server, source_manager=source_manager,
+                               visible_manager=visible_manager, data_holder=data_holder)
 
 @state.change("active_ui")
 def update_active_ui(active_ui, **kwargs):
@@ -175,10 +178,12 @@ with SinglePageWithDrawerLayout(server, theme=("theme_mode", "light")) as layout
             slice_card.show_card()
             contour_card.show_card()
             glyph_card.show_card()
-            streamtrace_card.show_card()
+            streamtracer_card.show_card()
+            threshold_card.show_card()
 
     with layout.content:
         view = paraview.VtkRemoteView(render_view)
+        # view = paraview.VtkLocalView(render_view)
         ctrl.view_update = view.update
         ctrl.view_reset_camera = view.reset_camera
         visible_manager.initialize_lookup_table(main_block_id=main_block_id)

@@ -17,6 +17,7 @@ class StandardButton:
         self.state.file_upload_dialog = False
         self.state.file_input = ""
         self.state.disabled_render_button = True
+        self.state.color_bar_visibility = True
 
         @self.state.change("file_input")
         def file_input_changed(file_input, **kwargs):
@@ -28,6 +29,7 @@ class StandardButton:
         self.ctrl.open_file_upload_dialog_trigger = self.open_file_upload_dialog_trigger
         self.ctrl.close_file_upload_dialog_trigger = self.close_file_upload_dialog_trigger
         self.ctrl.handle_uploaded_file = self.handle_uploaded_file
+        self.ctrl.set_color_bar = self.set_color_bar
 
     def standard_button(self):
         with vuetify.VDialog(v_model=("file_upload_dialog",), width="500"):
@@ -59,9 +61,14 @@ class StandardButton:
             icon="mdi-file-import",
             click=self.ctrl.open_file_upload_dialog_trigger,
         )
-        vuetify.VBtn(
-            "update",
-            click=self.ctrl.view_update
+        vuetify.VCheckbox(
+            v_model=("color_bar_visibility", ),
+            true_icon="mdi-eye-outline",
+            false_icon="mdi-eye-closed",
+            classes="mx-1",
+            hide_details=True,
+            dense=True,
+            # click=self.ctrl.set_color_bar,
         )
         vuetify.VBtn(
             icon="mdi mdi-crop-free",
@@ -80,3 +87,7 @@ class StandardButton:
         # self.state.flush()
         # self.file_process.initialize_new_module()
         self.state.file_upload_dialog = False
+
+    def set_color_bar(self):
+        self.state.color_bar_visibility = not self.state.color_bar_visibility
+        print(self.state.color_bar_visibility)

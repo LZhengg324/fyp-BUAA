@@ -175,7 +175,17 @@ class GlyphCard:
             vuetify.VLabel(
                 "{{Glyph_CurScaleFactor}}"
             )
+            with vuetify.VRow():
+                vuetify.VBtn(
+                    "Threshold",
+                    classes="my-3",
+                    width="100%",
+                    click=self.ctrl.create_threshold_view,
+                )
 
+    # ----------------------------------------------------------------------------
+    # GUI Callbacks
+    # ----------------------------------------------------------------------------
 
     def reset_default_value(self):
         if self.state.Glyph_ScaleArray == "No Scale Array":

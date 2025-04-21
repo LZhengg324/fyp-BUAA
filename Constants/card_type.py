@@ -4,3 +4,4 @@ class CardType:
     Contour = 3
     Glyph = 4
     StreamTracer = 5
+    Threshold = 6

@@ -111,7 +111,7 @@ class SourceManager:
                            vector_scale_mode: str, scale_factor: float):
         source = self.sources[source_id]
         for glyph_filter in source.values():
-            print("glyph_filter.VectorScaleMode", glyph_filter.VectorScaleMode)
+            # print("glyph_filter.VectorScaleMode", glyph_filter.VectorScaleMode)
             glyph_filter.GlyphType = glyph_type
             glyph_filter.OrientationArray = orientation_array
             glyph_filter.ScaleArray = scale_array
@@ -145,5 +145,26 @@ class SourceManager:
             st_filter.SeedType.Point1 = [point1_x, point1_y, point1_z]
             st_filter.SeedType.Point2 = [point2_x, point2_y, point2_z]
 
+    # -----------------------------------------------------------------------------
+    # Threshold
+    # -----------------------------------------------------------------------------
 
+    def add_threshold(self, source_id: int):
+        source_set = self.sources[source_id]
+        new_source = {}
+        for time_step, source in source_set.items():
+            new_source[time_step] = simple.Threshold(Input=source)
+        return self.add_source(new_source)
 
+    def modify_threshold_props(self, source_id: int, scalar: str,
+                               lower_value: float, upper_value: float, method: str,
+                               all_scalars: bool, use_continuous_cell_range: bool, invert: bool):
+        source = self.sources[source_id]
+        for threshold_filter in source.values():
+            threshold_filter.Scalars = scalar
+            threshold_filter.LowerThreshold = lower_value
+            threshold_filter.UpperThreshold = upper_value
+            threshold_filter.ThresholdMethod = method
+            threshold_filter.AllScalars = all_scalars
+            threshold_filter.UseContinuousCellRange = use_continuous_cell_range
+            threshold_filter.Invert = invert
