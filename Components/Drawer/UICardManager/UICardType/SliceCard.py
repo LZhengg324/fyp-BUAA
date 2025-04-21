@@ -209,7 +209,14 @@ class SliceCard:
                     text="Stream Trace",
                     width="100%",
                     click=self.ctrl.create_stream_tracer_view,
+
+                )
+            with vuetify.VRow():
+                vuetify.VBtn(
+                    "Threshold",
                     classes="my-3",
+                    width="100%",
+                    click=self.ctrl.create_threshold_view,
                 )
 
     # -----------------------------------------------------------------------------

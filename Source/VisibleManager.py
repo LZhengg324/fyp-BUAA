@@ -14,8 +14,26 @@ class VisibleManager:
         self.visible_items = {}
         self.source_manager = source_manager
         self.render_view = render_view
+
+        # 渲染方式为Local时需要加入一个dummy actor防止render_view为空
+        # 创建一个微小的立方体（几乎不可见）
+        placeholder = simple.Box()
+        placeholder.XLength = 0.001
+        placeholder.YLength = 0.001
+        placeholder.ZLength = 0.001
+        display = simple.Show(placeholder)
+        display.Opacity = 0.0
+        display.Representation = "Wireframe"
+
         self.state = server.state
         self.ctrl = server.controller
+        self.color_bar = None
+
+        @self.state.change("color_bar_visibility")
+        def color_bar_visibility_changed(color_bar_visibility, **kwargs):
+            if self.color_bar:
+                self.color_bar.Visibility = color_bar_visibility
+                self.ctrl.view_update()
 
     def initialize_lookup_table(self, main_block_id: int):
         main_source = self.source_manager.get_source(main_block_id, self.state.cur_step)
@@ -53,7 +71,13 @@ class VisibleManager:
             display.LookupTable = self.LookupTable[self.state.cur_point_data]
             display.ColorArrayName = (self.state.cur_mesh, self.state.cur_point_data)
         simple.Render(self.render_view)
-        # self.render_view.ResetCamera()
+        if self.color_bar:
+            print("here in")
+            self.color_bar.Visibility = False
+        self.color_bar = simple.GetScalarBar(self.LookupTable[self.state.cur_point_data])
+        self.color_bar.Visibility = self.state.color_bar_visibility
+        self.color_bar.Title = self.state.cur_point_data
+        self.color_bar.ComponentTitle = ""
         self.ctrl.view_update()
 
     def get_render_view(self):
@@ -69,4 +93,6 @@ class VisibleManager:
         for display in self.visible_items.values():
             simple.Delete(display)
         self.visible_items.clear()
+        self.color_bar.Visibility = False
+        self.color_bar = None
         print("visible manager", self.visible_items)

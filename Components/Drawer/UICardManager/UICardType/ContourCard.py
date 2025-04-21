@@ -170,6 +170,13 @@ class ContourCard:
                     classes="ma-3",
                     click=self.ctrl.open_batch_dialog,
                 )
+            with vuetify.VRow():
+                vuetify.VBtn(
+                    "Threshold",
+                    classes="my-3",
+                    width="100%",
+                    click=self.ctrl.create_threshold_view,
+                )
 
 
     # ----------------------------------------------------------------------------
