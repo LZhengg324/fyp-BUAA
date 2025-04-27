@@ -19,14 +19,13 @@ class ThresholdCard:
         self.ctrl = server.controller
 
         # List
-        self.state.Threshold_value_step = {pd : round((self.state.point_data_range[pd][1] - self.state.point_data_range[pd][0]) / 100, 5)
-                                           for pd in self.state.scalar_fields}
+        self.state.Threshold_value_step = {}
         self.state.Threshold_method_list = ["Between", "Below Lower Threshold", "Above Upper Threshold"]
 
         # Variable
-        self.state.Threshold_sel_scalar = self.state.scalar_fields[0]
-        self.state.Threshold_lower_value = self.state.point_data_range[self.state.Threshold_sel_scalar][0]
-        self.state.Threshold_upper_value = self.state.point_data_range[self.state.Threshold_sel_scalar][1]
+        self.state.Threshold_sel_scalar = ""
+        self.state.Threshold_lower_value = 0
+        self.state.Threshold_upper_value = 0
         self.state.Threshold_method = self.state.Threshold_method_list[0]
         self.state.Threshold_AllScalars = True
         self.state.Threshold_UseContinuousCellRange = False

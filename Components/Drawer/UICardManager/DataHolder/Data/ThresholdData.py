@@ -8,9 +8,12 @@ from Components.Drawer.UICardManager.DataHolder.Data.Data import Data
 class ThresholdData(Data):
     def __init__(self, data_id: int, name: str, server: Server):
         super().__init__(data_id=data_id, name=name, server=server)
+        # List
+        self.state.Threshold_value_step = {pd : round((self.state.point_data_range[pd][1] - self.state.point_data_range[pd][0]) / 100, 5)
+                                           for pd in self.state.scalar_fields}
         self.Threshold_sel_scalar = self.state.scalar_fields[0]
-        self.Threshold_lower_value = self.state.point_data_range[self.state.Threshold_sel_scalar][0]
-        self.Threshold_upper_value = self.state.point_data_range[self.state.Threshold_sel_scalar][1]
+        self.Threshold_lower_value = self.state.point_data_range[self.Threshold_sel_scalar][0]
+        self.Threshold_upper_value = self.state.point_data_range[self.Threshold_sel_scalar][1]
         self.Threshold_method = self.state.Threshold_method_list[0]
         self.Threshold_AllScalars = True
         self.Threshold_UseContinuousCellRange = False

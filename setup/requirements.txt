@@ -1,0 +1,8 @@
+--extra-index-url https://wheels.vtk.org
+trame
+trame-vtk
+trame-vuetify
+trame-components
+trame-iframe
+numpy
+vtk-osmesa

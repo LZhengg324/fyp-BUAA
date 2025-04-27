@@ -22,8 +22,8 @@ class GlyphCard:
 
         # List
         self.state.Glyph_GlyphType_List = ["Arrow", "Cone", "Box", "Cylinder", "Line", "Sphere", "2dGlyph"]
-        self.state.Glyph_OrientationArray_List = ["No Orientation Array"] + self.state.vector_field
-        self.state.Glyph_ScaleArray_List = ["No Scale Array"] + self.state.point_data_fields
+        self.state.Glyph_OrientationArray_List = ["No Orientation Array"]
+        self.state.Glyph_ScaleArray_List = ["No Scale Array"]
         self.state.Glyph_VectorScaleMode_List = ["Scale by Magnitude", "Scale by Components"]
 
         # Variable
@@ -37,11 +37,11 @@ class GlyphCard:
 
         @self.state.change('vector_field')
         def update_vector_field(vector_field, **kwargs):
-            self.state.Glyph_OrientationArray_List = ["No Orientation Array"] + self.state.vector_field
+            self.state.Glyph_OrientationArray_List = ["No Orientation Array"] + vector_field
 
         @self.state.change('point_data_fields')
         def update_point_data_fields(point_data_fields, **kwargs):
-            self.state.Glyph_ScaleArray_List = ["No Scale Array"] + self.state.point_data_fields
+            self.state.Glyph_ScaleArray_List = ["No Scale Array"] + point_data_fields
 
         # -----------------------------------------------------------------------------
         # CallBacks Register
@@ -56,11 +56,12 @@ class GlyphCard:
 
         @self.state.change('Glyph_ScaleArray')
         def update_Glyph_ScaleArray(Glyph_ScaleArray, **kwargs):
-            if Glyph_ScaleArray in self.state.scalar_fields:
-                self.state.Glyph_show_vector_scale_mode = False
-                self.state.Glyph_VectorScaleMode = "Scale by Magnitude"
-            else:
-                self.state.Glyph_show_vector_scale_mode = True
+            if self.state.scalar_fields:
+                if Glyph_ScaleArray in self.state.scalar_fields:
+                    self.state.Glyph_show_vector_scale_mode = False
+                    self.state.Glyph_VectorScaleMode = "Scale by Magnitude"
+                else:
+                    self.state.Glyph_show_vector_scale_mode = True
 
     # -----------------------------------------------------------------------------
     # GUI Components

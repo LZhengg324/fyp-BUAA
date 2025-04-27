@@ -40,7 +40,7 @@ class GlyphData(Data):
     def calculate_default_scale_factor(self) -> Dict[str, float]:
         default_scale_factor = {}
         for pd in self.state.point_data_fields:
-            default_scale_factor[pd] = round(0.01 / self.state.point_data_range[pd][1], 7)
+            default_scale_factor[pd] = round(0.01 / self.state.point_data_range[pd][1], 7) if self.state.point_data_range[pd][1] != 0 else 0.01
         print("default_scale_factor ", default_scale_factor)
         return default_scale_factor
 

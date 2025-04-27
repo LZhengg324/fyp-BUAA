@@ -28,20 +28,26 @@ class StreamTracerCard:
         self.state.ST_IntegratorType_List = ["Runge-Kutta 2", "Runge-Kutta 4", "Runge-Kutta 4-5"]
 
         # Variable
-        self.state.ST_Vectors = self.state.vector_field[0] if self.state.vector_field else None
+        # self.state.ST_Vectors = self.state.vector_field[0] if self.state.vector_field else None
+        # self.state.ST_IntegrationDirection = self.state.ST_IntegrationDirection_List[-1]
+        # self.state.ST_IntegratorType = self.state.ST_IntegratorType_List[-1]
+        # self.state.ST_MSL = max(self.state.data_bounds[i] for i in range(1, len(self.state.data_bounds), 2))
+        # self.state.ST_MSL_value = self.state.ST_MSL
+        # self.state.ST_DiagLength = sqrt(sum((self.state.data_bounds[i] - self.state.data_bounds[i - 1]) ** 2
+        #                                     for i in range(1, len(self.state.data_bounds), 2)))
+        self.state.ST_Vectors = ""
         self.state.ST_IntegrationDirection = self.state.ST_IntegrationDirection_List[-1]
         self.state.ST_IntegratorType = self.state.ST_IntegratorType_List[-1]
-        self.state.ST_MSL = max(self.state.data_bounds[i] for i in range(1, len(self.state.data_bounds), 2))
+        self.state.ST_MSL = 0.0
         self.state.ST_MSL_value = self.state.ST_MSL
-        self.state.ST_DiagLength = sqrt(sum((self.state.data_bounds[i] - self.state.data_bounds[i - 1]) ** 2
-                                            for i in range(1, len(self.state.data_bounds), 2)))
+        self.state.ST_DiagLength = 0.0
         self.state.ST_Resolution = 1000
         self.state.ST_Point1_x = 0
         self.state.ST_Point1_y = 0
         self.state.ST_Point1_z = 0
-        self.state.ST_Point2_x = self.state.data_bounds[1]
-        self.state.ST_Point2_y = self.state.data_bounds[3]
-        self.state.ST_Point2_z = self.state.data_bounds[5]
+        self.state.ST_Point2_x = 0
+        self.state.ST_Point2_y = 0
+        self.state.ST_Point2_z = 0
 
         # -----------------------------------------------------------------------------
         # CallBacks Register
