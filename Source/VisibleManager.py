@@ -36,12 +36,21 @@ class VisibleManager:
                 self.ctrl.view_update()
 
     def initialize_lookup_table(self, main_block_id: int):
-        main_source = self.source_manager.get_source(main_block_id, self.state.cur_step)
+        main_source = self.source_manager.get_source(main_block_id)
         for point_data in self.state.point_data_fields:
             display = simple.Show(main_source, self.render_view)
             simple.ColorBy(display, ("POINTS", point_data))
             self.LookupTable[point_data] = display.LookupTable
             simple.Delete(display)
+
+    # def initialize_lookup_table_real(self, main_block_id: int):
+    #     main_source = self.source_manager.get_source(main_block_id, self.state.cur_step)
+    #     for point_data in self.state.point_data_fields:
+    #         display = simple.Show(main_source, self.render_view)
+    #         simple.ColorBy(display, ("POINTS", point_data))
+    #         self.LookupTable[point_data] = display.LookupTable
+    #         simple.Delete(display)
+
 
 
     def set_visible(self, vid: int, visible: bool):
@@ -72,7 +81,6 @@ class VisibleManager:
             display.ColorArrayName = (self.state.cur_mesh, self.state.cur_point_data)
         simple.Render(self.render_view)
         if self.color_bar:
-            print("here in")
             self.color_bar.Visibility = False
         self.color_bar = simple.GetScalarBar(self.LookupTable[self.state.cur_point_data])
         self.color_bar.Visibility = self.state.color_bar_visibility
@@ -84,15 +92,22 @@ class VisibleManager:
         return self.render_view
 
     def get_display(self, vid: int):
-        display = simple.Show(self.source_manager.get_source(vid, self.state.cur_step), self.render_view)
+        display = simple.Show(self.source_manager.get_source(vid), self.render_view)
         display.LookupTable = self.LookupTable[self.state.cur_point_data]
         display.ColorArrayName = (self.state.cur_mesh, self.state.cur_point_data)
         return display
+
+    # def get_display_real(self, vid: int):
+    #     display = simple.Show(self.source_manager.get_source(vid, self.state.cur_step), self.render_view)
+    #     display.LookupTable = self.LookupTable[self.state.cur_point_data]
+    #     display.ColorArrayName = (self.state.cur_mesh, self.state.cur_point_data)
+    #     return display
 
     def reboot_all_for_new_main_module(self):
         for display in self.visible_items.values():
             simple.Delete(display)
         self.visible_items.clear()
-        self.color_bar.Visibility = False
+        if self.color_bar:
+            self.color_bar.Visibility = False
         self.color_bar = None
         print("visible manager", self.visible_items)

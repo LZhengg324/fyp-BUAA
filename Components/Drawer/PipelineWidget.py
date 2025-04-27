@@ -20,7 +20,8 @@ class PipelineWidget:
         self.source_manager = source_manager
         self.visible_manager = visible_manager
         self.data_holder = data_holder
-        self.state.pipeline = self.initialize_state_pipeline(1)
+        # self.state.pipeline = self.initialize_state_pipeline(1)
+        self.state.pipeline = []
         self.state.pipeline_key = 0
 
     # -----------------------------------------------------------------------------

@@ -1,10 +1,12 @@
 import paraview.web.venv  # Available in PV 5.10
 
+from pathlib import Path
 from trame.app import get_server
 from trame.widgets import vuetify3 as vuetify, paraview
 from trame.ui.vuetify3 import SinglePageLayout
 
 from paraview import simple
+import time
 from trame_vuetify.ui.vuetify3 import SinglePageWithDrawerLayout
 
 # -----------------------------------------------------------------------------
@@ -20,11 +22,17 @@ state, ctrl = server.state, server.controller
 
 # 1. 获取渲染窗口
 render_view = simple.GetActiveViewOrCreate('RenderView')
+print(render_view.ListProperties())
+# render_view.InteractionMode = "2D"
 
 # 2. 读取 VTK 数据
-vtk_file = "./File/host2/VTK/host_40.vtk"
-file_reader = simple.LegacyVTKReader(FileNames=[vtk_file])
-print(file_reader.FileNameInfo())
+vtk_file = Path(__file__).parent.joinpath("File").joinpath("host2").joinpath("VTK").joinpath("host_40.vtk")
+print(vtk_file)
+file_reader = simple.LegacyVTKReader(FileNames=[str(vtk_file)])
+# print(simple.XMLMultiBlockDataReader())
+# file_reader = simple.LegacyVTKReader(FileNames=vtk_file)
+print(file_reader.PointData)
+# print(file_reader.FileNameInfo())
 file_reader.UpdatePipeline()
 print(file_reader.GetDataInformation().GetBounds())
 print(list(file_reader.CellData.keys()))
@@ -34,10 +42,10 @@ scalar_field = 'p'
 #---------------Slice----------------#
 ######################################
 # 3. 创建切片过滤器
-slice_filter = simple.Slice(Input=file_reader)
-slice_filter.SliceType.Origin = [0.05, 0.05, 0.005]  # 切片平面原点
-slice_filter.SliceType.Normal = [0, 1, 0]
-slice_filter2 = simple.Slice(Input=file_reader)
+# slice_filter = simple.Slice(Input=file_reader)
+# slice_filter.SliceType.Origin = [0.05, 0.05, 0.005]  # 切片平面原点
+# slice_filter.SliceType.Normal = [0, 1, 0]
+# slice_filter2 = simple.Slice(Input=file_reader)
 # glyph = simple.Glyph(Input=slice_filter)
 # print(glyph.ListProperties())
 # glyph.GlyphType = "Arrow"
@@ -49,21 +57,21 @@ slice_filter2 = simple.Slice(Input=file_reader)
 # seeds.Point1 = [0, 0, 0.005]
 # seeds.Point2 = [0.1, 0.1, 0.005]
 
-stream_tracer = simple.StreamTracer(Input=slice_filter)
-print(dir(slice_filter))
-print(slice_filter.PointData['p'].GetRange())
-print(stream_tracer.ListProperties())
-print(stream_tracer.IntegratorType)
-stream_tracer.Vectors = ['POINTS', 'U']
-stream_tracer.MaximumStreamlineLength = 0.1
-stream_tracer.SeedType = "Line"
-
-print(stream_tracer.SeedType.ListProperties())
-print(stream_tracer.SeedType.Point1)
-print(stream_tracer.SeedType.Point2)
+# stream_tracer = simple.StreamTracer(Input=slice_filter)
+# print(dir(slice_filter))
+# print(slice_filter.PointData['p'].GetRange())
+# print(stream_tracer.ListProperties())
+# print(stream_tracer.IntegratorType)
+# stream_tracer.Vectors = ['POINTS', 'U']
+# stream_tracer.MaximumStreamlineLength = 0.1
+# stream_tracer.SeedType = "Line"
+#
+# print(stream_tracer.SeedType.ListProperties())
+# print(stream_tracer.SeedType.Point1)
+# print(stream_tracer.SeedType.Point2)
 # stream_tracer.SeedType.Point1 = [0, 0, 0.005]  # 线起点
 # stream_tracer.SeedType.Point2 = [0.1, 0.1, 0.005]   # 线终点
-stream_tracer.SeedType.Resolution = 10
+# stream_tracer.SeedType.Resolution = 10
 data_bounds = file_reader.GetDataInformation().GetBounds()
 
 #---------------------Test------------------------#
@@ -78,13 +86,13 @@ if "p" in file_reader.PointData.keys():
 # print(f"Data bounds: {data_bounds}")  # 输出数据范围
 # print(f"Slice origin: {slice_filter.SliceType.Origin}")  # 输出切片位置
 
-slice_filter.SliceType = "Plane"
-slice_filter2.SliceType = "Plane"
-
-# 设置切片参数
-      # 切片法线方向（X轴方向）
-slice_filter2.SliceType.Origin = [0.0, 0.09, 0]  # 切片平面原点
-slice_filter2.SliceType.Normal = [0, 0.5, 0]        # 切片法线方向（X轴方向）
+# slice_filter.SliceType = "Plane"
+# slice_filter2.SliceType = "Plane"
+#
+# # 设置切片参数
+#       # 切片法线方向（X轴方向）
+# slice_filter2.SliceType.Origin = [0.0, 0.09, 0]  # 切片平面原点
+# slice_filter2.SliceType.Normal = [0, 0.5, 0]        # 切片法线方向（X轴方向）
 
 ######################################
 #---------------Slice----------------#
@@ -105,16 +113,17 @@ slice_filter2.SliceType.Normal = [0, 0.5, 0]        # 切片法线方向（X轴�
 # 4. 显示切片结果
 # slice_display = simple.Show(slice_filter, render_view)
 # glyph_display = simple.Show(glyph, render_view)
-st_display = simple.Show(stream_tracer, render_view)
+# st_display = simple.Show(stream_tracer, render_view)
 # slice2_display = simple.Show(slice_filter2, render_view)
 # contour_display = simple.Show(contour_filter, render_view)
-# display = simple.Show(file_reader, render_view)
+display = simple.Show(file_reader, render_view)
 
 # print(list(slice_filter.PointData.keys()))
 # # 4. 选择标量字段 scalar_field 进行颜色映射
 # #     simple.ColorBy(contour_display, ('POINTS', scalar_field))
 # simple.ColorBy(glyph_display, ('POINTS', 'U'))
-simple.ColorBy(st_display, ('POINTS', 'U'))
+# simple.ColorBy(st_display, ('POINTS', 'U'))
+simple.ColorBy(display, ('POINTS', 'p'))
 #     simple.ColorBy(contour_display, ('POINTS', scalar_field))
 
 
@@ -136,6 +145,7 @@ simple.Render(render_view)
 # 7. 创建 trame 界面
 with SinglePageWithDrawerLayout(server) as layout:
     with layout.content:
+        # html_view = paraview.VtkLocalView(render_view, interactive_ratio=1)
         html_view = paraview.VtkRemoteView(render_view, interactive_ratio=1)
         ctrl.view_update = html_view.update
         ctrl.view_reset_camera = html_view.reset_camera

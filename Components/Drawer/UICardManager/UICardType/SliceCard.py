@@ -209,7 +209,7 @@ class SliceCard:
                     text="Stream Trace",
                     width="100%",
                     click=self.ctrl.create_stream_tracer_view,
-
+                    classes="my-3",
                 )
             with vuetify.VRow():
                 vuetify.VBtn(

@@ -23,7 +23,8 @@ class ContourCard:
 
         self.state.nt_available_delete = False
         self.state.Isosurfaces = {}
-        self.state.contour_by = self.state.scalar_fields[0]
+        # self.state.contour_by = self.state.scalar_fields[0]
+        self.state.contour_by = ""
         self.state.selected_item = []
         self.state.batch_dialog = False
         self.state.linear_num = 10
