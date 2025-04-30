@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 import zipfile
 
 import paraview.web.venv  # Available in PV 5.10
@@ -53,15 +54,18 @@ class FileProcess:
             return simple.XMLStructuredGridReader(FileName=str(file_path))
         elif suffix == "vtm":
             return simple.XMLMultiBlockDataReader(FileName=str(file_path))
+        elif suffix == "pvtu":
+            return simple.XMLPartitionedUnstructuredGridReader(FileName=str(file_path))
 
     def initialize_app(self, file_path: Path):
         reader = self.select_reader_type(file_path)
         reader.UpdatePipeline()
         print(reader)
-
         # Main Card
         self.state.data_bounds = reader.GetDataInformation().GetBounds()
         print(self.state.data_bounds)
+        # reader = simple.D3(Input=reader)
+        # print("D3 ", time.time())
         main_block_id = self.source_manager.add_source(reader)
         self.state.main_module_name = str(file_path.stem)
         self.data_holder.register(name=self.state.main_module_name, source_id=main_block_id, card_type=CardType.Main, data_bounds=self.state.data_bounds)
@@ -69,12 +73,13 @@ class FileProcess:
         # Scalar Field
         self.state.point_data_fields, self.state.point_data_range = self.source_manager.get_point_data_field_and_range(main_block_id)
         self.state.scalar_fields, self.state.vector_field = self.source_manager.get_scalar_vector_field_and_range(main_block_id)
-        self.state.cur_point_data = self.state.point_data_fields[0]
+        self.state.cur_point_data = self.state.point_data_fields[0] if self.state.point_data_fields else []
 
         # Mesh Field
         self.state.mesh_types = [
             {"title": "Points", "value": "POINTS"},
-            {"title": "Cells", "value": "CELLS"},]
+            {"title": "Cells", "value": "CELLS"},
+        ]
         self.state.cur_mesh = "POINTS"
 
         return main_block_id

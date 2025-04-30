@@ -1,3 +1,14 @@
+#trame:
+#  cmd:
+#    - "/bin/bash"
+#    - "/deploy/start.sh"
+#pv_server:
+#  cmd:
+#    - /opt/paraview/bin/mpiexec
+#    - -np
+#    - 16
+#    - /opt/paraview/bin/pvserver
+#
 trame:
   cmd:
     - /opt/paraview/bin/pvpython
