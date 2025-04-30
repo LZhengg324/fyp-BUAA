@@ -4,3 +4,5 @@
 .venv/
 File/
 d:\Project\fyp\trame\ParaView-5.11.2-MPI-Linux-Python3.9-x86_64.tar.gz
+.idea/
+__pycache__/
