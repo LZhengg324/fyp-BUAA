@@ -1,3 +1,5 @@
+import time
+
 import paraview.web.venv  # Available in PV 5.10
 
 from trame_server import Server
@@ -37,11 +39,15 @@ class VisibleManager:
 
     def initialize_lookup_table(self, main_block_id: int):
         main_source = self.source_manager.get_source(main_block_id)
+        display = simple.Show(main_source, self.render_view)
+        pre = time.time()
         for point_data in self.state.point_data_fields:
-            display = simple.Show(main_source, self.render_view)
             simple.ColorBy(display, ("POINTS", point_data))
             self.LookupTable[point_data] = display.LookupTable
-            simple.Delete(display)
+            cur = time.time()
+            print("lut", cur - pre)
+            pre = cur
+        simple.Delete(display)
 
     # def initialize_lookup_table_real(self, main_block_id: int):
     #     main_source = self.source_manager.get_source(main_block_id, self.state.cur_step)
@@ -87,6 +93,7 @@ class VisibleManager:
         self.color_bar.Title = self.state.cur_point_data
         self.color_bar.ComponentTitle = ""
         self.ctrl.view_update()
+        pass
 
     def get_render_view(self):
         return self.render_view

@@ -1,4 +1,5 @@
 import os
+import time
 
 import paraview.web.venv  # Available in PV 5.10
 
@@ -102,30 +103,42 @@ def update_file_input(file_input, **kwargs):
 def update_reboot_all_for_new_main_module(reboot_all_for_new_main_module, **kwargs):
     if reboot_all_for_new_main_module:
         try:
+            time1 = time.time()
+            print("time1:", time1)
             # Source Manager
             source_manager.reboot_all_for_new_main_module()
-
+            time2 = time.time()
+            print("time2 - time1: ", time2-time1)
             # Visible Manager
             visible_manager.reboot_all_for_new_main_module()
-
+            time3 = time.time()
+            print("time3 - time2: ", time3-time2)
             # Data Holder
             data_holder.reboot_all_for_new_main_module()
-
+            time4 = time.time()
+            print("time4 - time3: ", time4-time3)
             # File Process
             # new_main_module_id = fp.initialize_new_module()
             new_main_module_id = fp.initialize_app(Path(state.selected[0]))
-
+            time5 = time.time()
+            print("time5 - time4", time5-time4)
             # Pipeline Widget
             state.pipeline = pipeline_widget.initialize_state_pipeline(new_main_module_id)
+            time6 = time.time()
+            print("time6 - time5", time6 - time5)
             visible_manager.initialize_lookup_table(new_main_module_id)
+            time7 = time.time()
+            print("time7 - time6", time7 - time6)
             visible_manager.set_visible(new_main_module_id, True)
+            time8 = time.time()
+            print("time8 - time7", time8 - time7)
         except Exception as e:
             print(e)
         state.reboot_all_for_new_main_module = False
         ctrl.view_reset_camera()
         state.file_upload_dialog = False
         state.loading = False
-        print("Finish")
+        print("Finish:", time8-time1)
 
 
 # -----------------------------------------------------------------------------
@@ -210,4 +223,5 @@ with SinglePageWithDrawerLayout(server, theme=("theme_mode", "light")) as layout
 
 # 8. 启动服务器
 if __name__ == '__main__':
+    simple.Connect("LAPTOP-EA0G2BQO")
     server.start(host="127.0.0.1")
