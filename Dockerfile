@@ -1,6 +1,6 @@
 FROM kitware/trame:py3.10-ubuntu22.04
 
-COPY ./entrypoint.sh /opt/trame/entrypoint.sh
+# COPY ./entrypoint.sh /opt/trame/entrypoint.sh
 
 RUN install -d -o trame-user -g trame-user /deploy
 RUN apt-get update && apt-get install mesa-utils-extra -y \

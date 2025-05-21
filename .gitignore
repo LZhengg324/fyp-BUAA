@@ -1,8 +1,8 @@
 # .gitignore
-.lvenv/
-.lvenv2/
-.venv/
-File/
-d:\Project\fyp\trame\ParaView-5.11.2-MPI-Linux-Python3.9-x86_64.tar.gz
 .idea/
-__pycache__/
+**/__pycache__/
+*.pyc
+.venv/
+.lvenv*/
+src/CFD_Files/
+d:\Project\fyp\trame\ParaView-5.11.2-MPI-Linux-Python3.9-x86_64.tar.gz
