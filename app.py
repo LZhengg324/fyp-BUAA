@@ -1,6 +1,9 @@
 import os
 import subprocess
+import sys
 import time
+import argparse
+import socket
 
 import paraview.web.venv  # Available in PV 5.10
 
@@ -8,25 +11,25 @@ from trame.app import get_server
 from trame.modules import trame
 from trame.widgets import vuetify3 as vuetify, paraview, html, client
 
-from components.Drawer.UICardManager.DataHolder.DataHolder import DataHolder
-from components.Drawer.UICardManager.UICardType.ContourCard import ContourCard
-from components.Drawer.UICardManager.UICardType.GlyphCard import GlyphCard
-from components.Drawer.UICardManager.UICardType.MainCard import MainCard
-from components.Drawer.UICardManager.UICardType.SliceCard import SliceCard
-from components.Drawer.UICardManager.UICardType.StreamTracerCard import StreamTracerCard
-from components.Drawer.UICardManager.UICardType.ThresholdCard import ThresholdCard
-from components.Toolbar.PointDataSelector import PointDataSelector
-from components.Toolbar.StandardButton import StandardButton
-from components.Toolbar.TimeStep import TimeStep
-from components.Drawer.PipelineWidget import PipelineWidget
-from manager.SourceManager import SourceManager
-from manager.VisibleManager import VisibleManager
-from file_processor.FileProcessor import FileProcess
+from src.components.Drawer.UICardManager.DataHolder.DataHolder import DataHolder
+from src.components.Drawer.UICardManager.UICardType.ContourCard import ContourCard
+from src.components.Drawer.UICardManager.UICardType.GlyphCard import GlyphCard
+from src.components.Drawer.UICardManager.UICardType.MainCard import MainCard
+from src.components.Drawer.UICardManager.UICardType.SliceCard import SliceCard
+from src.components.Drawer.UICardManager.UICardType.StreamTracerCard import StreamTracerCard
+from src.components.Drawer.UICardManager.UICardType.ThresholdCard import ThresholdCard
+from src.components.Toolbar.PointDataSelector import PointDataSelector
+from src.components.Toolbar.StandardButton import StandardButton
+from src.components.Toolbar.TimeStep import TimeStep
+from src.components.Drawer.PipelineWidget import PipelineWidget
+from src.manager.SourceManager import SourceManager
+from src.manager.VisibleManager import VisibleManager
+from src.file_processor.FileProcessor import FileProcess
 from paraview import simple
 from trame_vuetify.ui.vuetify3 import SinglePageWithDrawerLayout
 from pathlib import Path
 
-from utils.IframeManager import IframeManager
+from src.utils.IframeManager import IframeManager
 
 # -----------------------------------------------------------------------------
 # Constants
@@ -52,37 +55,98 @@ def read_file(file_name: str) -> None:
 server = get_server(client_type="vue3")
 state, ctrl = server.state, server.controller
 
+# 本地
+# try:
+#     pid = os.getpid()
+#     hostname = os.uname().nodename
+#     # os.system(f"/opt/paraview/bin/mpiexec -np 16 /opt/paraview/bin/pvserver -p {pid}")
+#     # subprocess.Popen([
+#     #     "$TRAME_PARAVIEW/bin/mpiexec",
+#     #     "-np", "$PARAVIEW_PVSERVER_THREADS",
+#     #     "$TRAME_PARAVIEW/bin/pvserver",
+#     #     "-p", str(pid)
+#     # ])
+#     subprocess.Popen([
+#     os.path.join(os.environ.get("TRAME_PARAVIEW", ""), "bin", "mpiexec"),
+#     "-np", os.environ.get("PARAVIEW_PVSERVER_THREADS", "1"),
+#     os.path.join(os.environ.get("TRAME_PARAVIEW", ""), "bin", "pvserver"),
+#     "-p", str(pid)
+#     ])
+#     simple.Connect(f"{hostname}", pid)
+#     print(server.port)
+# except Exception as e:
+#     print(e)
+
+# @ctrl.trigger("helloworld")
+# def trytry():
+#     try:
+#         pid = os.getpid()
+#         hostname = os.uname().nodename
+#         # os.system(f"/opt/paraview/bin/mpiexec -np 16 /opt/paraview/bin/pvserver -p {pid}")
+#         subprocess.Popen([
+#             "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/mpiexec",
+#             "-np", "4",
+#             "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/pvserver",
+#             "-p", str(pid)
+#         ])
+#         simple.Connect(f"{hostname}", pid)
+#         print(server.port)
+#     except Exception as e:
+#         print(e)
+
+
+def check_port_in_use(port, host='127.0.0.1'):
+    s = None
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(1)
+        s.connect((host, int(port)))
+        return True
+    except socket.error:
+        return False
+    finally:
+        if s:
+            s.close()
+
+parser = argparse.ArgumentParser(
+    prog='$TRAME_PARAVIEW/bin/pvpython',  # 程序名
+)
+# parser.add_argument('filename')  # 位置参数
+# 本地
+# parser.add_argument('--venv')  # 接受一个值的选项
+# parser.add_argument('--port')  # 接受一个值的选项
+# print(f"port: {parser.parse_args().port}")
+# print(f"venv: {parser.parse_args().venv}")
+
+# Docker的
+parser.add_argument('--host')
+parser.add_argument('--port')
+parser.add_argument('--authKey')
+parser.add_argument('--server', action='store_true', required=False)
+print(f"host: {parser.parse_args().host}")
+print(f"port: {parser.parse_args().port}")
+print(f"authKey: {parser.parse_args().authKey}")
+print(f"server: {parser.parse_args().server}")
+
+port = int(parser.parse_args().port) + 2111
+while True:
+    if not check_port_in_use(port):
+        break
+    port += 1
+
 try:
     pid = os.getpid()
     hostname = os.uname().nodename
-    # os.system(f"/opt/paraview/bin/mpiexec -np 16 /opt/paraview/bin/pvserver -p {pid}")
     subprocess.Popen([
-        "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/mpiexec",
-        "-np", "2",
-        "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/pvserver",
-        "-p", str(pid)
+        os.path.join(os.environ.get("TRAME_PARAVIEW", ""), "bin", "mpiexec"),
+        "-np", os.environ.get("PARAVIEW_PVSERVER_THREADS", "1"),
+        os.path.join(os.environ.get("TRAME_PARAVIEW", ""), "bin", "pvserver"),
+        "-p", str(port)
     ])
-    simple.Connect(f"{hostname}", pid)
+    simple.Connect(f"{hostname}", port)
     print(server.port)
 except Exception as e:
     print(e)
-
-@ctrl.trigger("helloworld")
-def trytry():
-    try:
-        pid = os.getpid()
-        hostname = os.uname().nodename
-        # os.system(f"/opt/paraview/bin/mpiexec -np 16 /opt/paraview/bin/pvserver -p {pid}")
-        subprocess.Popen([
-            "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/mpiexec",
-            "-np", "2",
-            "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/pvserver",
-            "-p", str(pid)
-        ])
-        simple.Connect(f"{hostname}", pid)
-        print(server.port)
-    except Exception as e:
-        print(e)
 
 # -----------------------------------------------------------------------------
 # ParaView code
@@ -173,24 +237,25 @@ threshold_card = ThresholdCard(server=server, source_manager=source_manager,
 # GUI
 # -----------------------------------------------------------------------------
 
-def monitor_life_cycles(life_cycle):
-    print(f"Life cycle: {life_cycle}")
-    print(f"View ID: {render_view.GetGlobalIDAsString()}")
-    print(server.port)
-    try:
-        port = server.port + 2111
-        hostname = os.uname().nodename
-        # os.system(f"/opt/paraview/bin/mpiexec -np 16 /opt/paraview/bin/pvserver -p {pid}")
-        subprocess.Popen([
-            "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/mpiexec",
-            "-np", "2",
-            "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/pvserver",
-            "-p", str(port)
-        ])
-        simple.Connect(f"{hostname}", port)
-        print(server.port)
-    except Exception as e:
-        print(e)
+# @ctrl.add("on_client_connected")
+# def func():
+#     print(f"Life cycle: on server ready")
+#     print(f"View ID: {render_view.GetGlobalIDAsString()}")
+#     print(server.port)
+#     try:
+#         port = server.port + 2111
+#         hostname = os.uname().nodename
+#         # os.system(f"/opt/paraview/bin/mpiexec -np 16 /opt/paraview/bin/pvserver -p {pid}")
+#         subprocess.Popen([
+#             "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/mpiexec",
+#             "-np", "2",
+#             "/opt/ParaView-5.12.0-MPI-Linux-Python3.10-x86_64/bin/pvserver",
+#             "-p", str(port)
+#         ])
+#         simple.Connect(f"{hostname}", port)
+#         print(server.port)
+#     except Exception as e:
+#         print(e)
 
 
 def client_exited():
@@ -206,10 +271,10 @@ with SinglePageWithDrawerLayout(server, theme=("theme_mode", "light")) as layout
     #     # destroyed=(monitor_life_cycles, "['destroyed']"),
     # )
     with layout.toolbar as toolbar:
-        vuetify.VBtn(
-            "button",
-            click="trigger('helloworld')"
-        )
+        # vuetify.VBtn(
+        #     "button",
+        #     click="trigger('helloworld')"
+        # )
         point_data_selector.point_data_selector()
         vuetify.VSpacer()
         # time_step.time_step()
