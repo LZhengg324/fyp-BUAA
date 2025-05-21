@@ -12,7 +12,7 @@
 trame:
   cmd:
     - /opt/paraview/bin/pvpython
-    - /deploy/app.py
+    - /deploy/src/app.py
     - --host
     - ${host}
     - --port
