@@ -16,7 +16,7 @@ Before Run
 Start server
 
 ```bash
-pvpython app.py --venv .lvenv/
+$TRAME_PARAVIEW/bin/pvpython app.py --venv .lvenv/
 ```
 
 
